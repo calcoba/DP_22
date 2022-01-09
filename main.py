@@ -223,22 +223,22 @@ explainer_rf = shap.TreeExplainer(rf_model_best)
 shap_values_rf = explainer_rf.shap_values(x_test)
 
 shap.summary_plot(shap_values_dt[1], features=x_test,
-                  feature_names=x.columns, plot_size=(15, 8), show=False, plot_type='dot')
+                  feature_names=x_test.columns, plot_size=(15, 8), show=False, plot_type='dot')
 plt.savefig("images/explained_model.png")
 plt.close()
 
 shap.summary_plot(shap_values_lg, features=x_test,
-                  feature_names=x.columns, plot_size=(15, 8), show=False, plot_type='dot')
+                  feature_names=x_test.columns, plot_size=(15, 8), show=False, plot_type='dot')
 plt.savefig("images/explained_model_1.png")
 plt.close()
 
 shap.summary_plot(shap_values_mlp, features=x_test,
-                  feature_names=x.columns, plot_size=(15, 8), show=False, plot_type='dot')
+                  feature_names=x_test.columns, plot_size=(15, 8), show=False, plot_type='dot')
 plt.savefig("images/explained_model_2.png")
 plt.close()
 
 shap.summary_plot(shap_values_rf[1], features=x_test,
-                  feature_names=x.columns, plot_size=(15, 8), show=False, plot_type='dot')
+                  feature_names=x_test.columns, plot_size=(15, 8), show=False, plot_type='dot')
 plt.savefig("images/explained_model_3.png")
 plt.close()
 
