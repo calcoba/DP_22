@@ -193,8 +193,8 @@ grid_search = GridSearchCV(estimator=RF1, param_grid=grid, n_jobs=-1, cv=cv, sco
 
 rf_model = generate_model(x_train, y_train, x_test, y_test, grid_search)
 
-print(f"Training Accuracy of Random Forest is {rf_model[1]}")
-print(f"Test Accuracy of Random Forest is {rf_model[2]} \n")
+print(f"Training Accuracy of Random Forest is {rf_model[1].round(2)}")
+print(f"Test Accuracy of Random Forest is {rf_model[2].round(2)} \n")
 
 print(f"Confusion Matrix :- \n{rf_model[3]}\n")
 print(f"Classification Report :- \n {rf_model[4]}")
@@ -217,8 +217,9 @@ shap_values_lg = explainer_lg.shap_values(X_test)
 explainer_mlp = shap.KernelExplainer(mlp_model[0].predict, X_train)
 shap_values_mlp = explainer_mlp.shap_values(X_test)
 
-rf_model[0].fit(x_train, y_train)
-explainer_rf = shap.TreeExplainer(rf_model[0])
+rf_model_best = rf_model[0].best_estimator_
+rf_model_best.fit(x_train, y_train)
+explainer_rf = shap.TreeExplainer(rf_model_best)
 shap_values_rf = explainer_rf.shap_values(x_test)
 
 shap.summary_plot(shap_values_dt[1], features=x_test,
@@ -238,7 +239,7 @@ plt.close()
 
 shap.summary_plot(shap_values_rf[1], features=x_test,
                   feature_names=x.columns, plot_size=(15, 8), show=False, plot_type='dot')
-plt.savefig("images/explained_model.png")
+plt.savefig("images/explained_model_3.png")
 plt.close()
 
 print('Explained model image created!')
