@@ -1,5 +1,6 @@
+import numpy as np
 import pandas as pd
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, mean_squared_error, r2_score
 
 def random_value_imputation(database, feature):
     random_sample = database[feature].dropna().sample(database[feature].isna().sum())
@@ -20,7 +21,7 @@ def get_num_people_by_age_category(df):
     return df
 
 
-def generate_model(x_train, y_train, x_test, y_test, model):
+def generate_model(x_train, y_train, x_test, y_test, model, assemble=False):
     model.fit(x_train, y_train)
     y_pred_train = model.predict(x_train)
     y_pred = model.predict(x_test)
