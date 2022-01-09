@@ -35,7 +35,6 @@ while not data_loaded:
 data = data.drop('ID', axis=1)
 
 # Data preprocessing
-
 nan_column = ['AGE', 'TEMP', 'HEART_RATE', 'GLUCOSE', 'SAT_O2', 'BLOOD_PRES_SYS', 'BLOOD_PRES_DIAS']
 data[nan_column] = data[nan_column].replace(0, np.nan)
 
@@ -127,7 +126,7 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_
 chi2_test = chi2(x_train, y_train)
 unusefull_columns = []
 for p_value, column_name in zip(chi2_test[1], x.columns):
-    if p_value > 0.1:
+    if p_value > 0.05:
         unusefull_columns.append(column_name)
 print(unusefull_columns)
 
