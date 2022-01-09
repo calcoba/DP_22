@@ -131,6 +131,7 @@ unusefull_columns = []
 for p_value, column_name in zip(chi2_test[1], x.columns):
     if p_value > 0.1:
         unusefull_columns.append(column_name)
+print(unusefull_columns)
 
 df = pd.DataFrame({'Nombre_feat': x.columns, 'values': chi2_test[0]})
 df.plot.barh(x='Nombre_feat', y='values', rot=0, figsize=(10, 10))
@@ -170,13 +171,13 @@ print(f"Test Accuracy of Neural Network is {mlp_model[2].round(2)} \n")
 print(f"Confusion Matrix :- \n{mlp_model[3]}\n")
 print(f"Classification Report :- \n {mlp_model[4]}")
 
-log_model = generate_model(X_train, y_train, X_test, y_test, LogisticRegression(random_state=0))
+lr_model = generate_model(X_train, y_train, X_test, y_test, LogisticRegression(random_state=0))
 
-print(f"Training Accuracy of Logistic Regression is {log_model[1].round(2)}")
-print(f"Test Accuracy of Logistic Regression is {log_model[2].round(2)} \n")
+print(f"Training Accuracy of Logistic Regression is {lr_model[1].round(2)}")
+print(f"Test Accuracy of Logistic Regression is {lr_model[2].round(2)} \n")
 
-print(f"Confusion Matrix :- \n{log_model[3]}\n")
-print(f"Classification Report :- \n {log_model[4]}")
+print(f"Confusion Matrix :- \n{lr_model[3]}\n")
+print(f"Classification Report :- \n {lr_model[4]}")
 
 RF1 = RandomForestClassifier(random_state=0)
 # define the grid of values to search
@@ -204,13 +205,40 @@ plt.savefig("images/RF_matrix.jpg")
 plt.close()
 print('Confusion matrix image created!')
 
-shap.initjs()
-RF1 = rf_model[0].best_estimator_
-explainer = shap.TreeExplainer(RF1)
-shap_values = explainer.shap_values(X_test)
+dt_model[0].fit(x_train, y_train)
+explainer_dt = shap.TreeExplainer(dt_model[0])
+shap_values_dt = explainer_dt.shap_values(x_test)
 
-shap.summary_plot(shap_values[1], features=X_test, max_display=len(x.columns), feature_names=x.columns,
-                  plot_size=(27, 10), show=False, plot_type='dot')
-plt.savefig("images/explained_model.jpg")
+#lr_model[0].fit(X_train, y_train)
+explainer_lg = shap.LinearExplainer(lr_model[0], X_train)
+shap_values_lg = explainer_lg.shap_values(X_test)
+
+#mlp_model[0].fit(X_train, y_train)
+explainer_mlp = shap.KernelExplainer(mlp_model[0].predict, X_train)
+shap_values_mlp = explainer_mlp.shap_values(X_test)
+
+rf_model[0].fit(x_train, y_train)
+explainer_rf = shap.TreeExplainer(rf_model[0])
+shap_values_rf = explainer_rf.shap_values(x_test)
+
+shap.summary_plot(shap_values_dt[1], features=x_test,
+                  feature_names=x.columns, plot_size=(15, 8), show=False, plot_type='dot')
+plt.savefig("images/explained_model.png")
 plt.close()
+
+shap.summary_plot(shap_values_lg, features=x_test,
+                  feature_names=x.columns, plot_size=(15, 8), show=False, plot_type='dot')
+plt.savefig("images/explained_model_1.png")
+plt.close()
+
+shap.summary_plot(shap_values_mlp, features=x_test,
+                  feature_names=x.columns, plot_size=(15, 8), show=False, plot_type='dot')
+plt.savefig("images/explained_model_2.png")
+plt.close()
+
+shap.summary_plot(shap_values_rf[1], features=x_test,
+                  feature_names=x.columns, plot_size=(15, 8), show=False, plot_type='dot')
+plt.savefig("images/explained_model.png")
+plt.close()
+
 print('Explained model image created!')
