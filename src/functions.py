@@ -21,7 +21,7 @@ def get_num_people_by_age_category(df):
     return df
 
 
-def generate_model(x_train, y_train, x_test, y_test, model, assemble=False):
+def generate_model(x_train, y_train, x_test, y_test, model):
     model.fit(x_train, y_train)
     y_pred_train = model.predict(x_train)
     y_pred = model.predict(x_test)

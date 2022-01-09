@@ -1,10 +1,11 @@
 import os
+import sys
 
 import matplotlib.pyplot as plt
 import seaborn as sns
 from lifelines import KaplanMeierFitter
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
-from sklearn.feature_selection import SelectKBest, chi2
+from sklearn.feature_selection import chi2
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
@@ -35,7 +36,6 @@ data = data.drop('ID', axis=1)
 
 # Data preprocessing
 
-# esta parte no se me ocurre del como generalizarla
 nan_column = ['AGE', 'TEMP', 'HEART_RATE', 'GLUCOSE', 'SAT_O2', 'BLOOD_PRES_SYS', 'BLOOD_PRES_DIAS']
 data[nan_column] = data[nan_column].replace(0, np.nan)
 
@@ -85,8 +85,6 @@ for col in cat_cols:
         data[col] = le.fit_transform(data[col])
     else:
         data[col] = ohe.fit_transform(data[col])
-
-# heatmap of data
 
 plt.figure(figsize=(12, 12))
 sns.heatmap(data.corr(), annot=True, linecolor='lightgrey', )
@@ -222,7 +220,7 @@ rf_model_best.fit(x_train, y_train)
 explainer_rf = shap.TreeExplainer(rf_model_best)
 shap_values_rf = explainer_rf.shap_values(x_test)
 
-shap.summary_plot(shap_values_dt[1], features=x_test,
+shap.summary_plot(shap_values_dt[0], features=x_test,
                   feature_names=x_test.columns, plot_size=(15, 8), show=False, plot_type='dot')
 plt.savefig("images/explained_model.png")
 plt.close()
@@ -237,9 +235,57 @@ shap.summary_plot(shap_values_mlp, features=x_test,
 plt.savefig("images/explained_model_2.png")
 plt.close()
 
-shap.summary_plot(shap_values_rf[1], features=x_test,
+shap.summary_plot(shap_values_rf[0], features=x_test,
                   feature_names=x_test.columns, plot_size=(15, 8), show=False, plot_type='dot')
 plt.savefig("images/explained_model_3.png")
 plt.close()
 
 print('Explained model image created!')
+
+models = np.array([dt_model, knn_model, mlp_model, rf_model], dtype=object)
+best_model = np.argmax(models[:, 2], axis=0)
+print(best_model)
+if best_model == 3:
+    models[3][0] = rf_model[0].best_estimator_
+print()
+print()
+print('The best model is:')
+print(models[best_model][0])
+final_model = models[best_model][0]
+feature_names = x_train.columns
+if best_model == 1 or best_model == 2:
+    x_train, x_test = X_train, X_test
+final_model.fit(x_train, y_train)
+print(x_train)
+print()
+print()
+while True:
+    print('''***************************************
+*                                     *
+*       Please select an option       *
+*                                     *
+*  1. Make prediction with best model *
+*  2. Exit the program                *
+*                                     *
+***************************************''')
+    try:
+        option = int(input('Selection: '))
+    except ValueError:
+        print('Please enter a valid option')
+        option = 0
+    if option == 1:
+        try:
+            print('Please enter the instance features ({}):'.format(feature_names))
+            features = input('Enter the features values separated by comas: ')
+            features = list(features.split(','))
+            features = np.array(features, dtype=float).reshape(1, -1)
+            if best_model == 1 or best_model == 2:
+                features = scaler.transform(features)
+            instance_pred = final_model.predict(features)
+            print('Prediction for the instance: {}'.format(instance_pred))
+        except:
+            print('Please enter a valid option')
+    elif option == 2:
+        sys.exit()
+    else:
+        print('Please enter a valid option')
