@@ -14,8 +14,9 @@ for each of them a complete report will be displayed in the command line and a p
 best model will be selected.
 Finally the code will allow the user to enter new instances and make predictions with the best model founded.
 
-src: This directory contains a single .py file.
-  functions.py: this file provide the created function used in the main.py file.
+ src: This directory contains a single .py file.
+ 
+ functions.py: this file provide the created function used in the main.py file.
  
  data: This directory is where the files that are going to be analyzed must be placed for selecting them when executing the program.
  
