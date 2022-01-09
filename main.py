@@ -129,6 +129,8 @@ print('Kaplan-Meier image created!')
 
 # Generating a model
 y = covid.EXITUS
+# The DAYS_HOSPITAL and DAYS_ICU features are dropped because it is data that is not available when the patient enter to
+# the hospital
 x = covid.drop(columns=['EXITUS', 'AGE_GROUP', 'DAYS_HOSPITAL', 'DAYS_ICU'], axis=1)
 
 # Split the dataset in train and test set
